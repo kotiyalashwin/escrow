@@ -1,7 +1,7 @@
 //struct for context
 //implementation with function
 use anchor_lang::prelude::*;
-use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenAccount, TokenInterface}};
+use anchor_spl::{associated_token::AssociatedToken,  token_interface::{Mint, TokenAccount, TokenInterface,TransferChecked, transfer_checked}};
 
 use crate::state::Escrow;
 
@@ -71,5 +71,40 @@ pub struct MakeOffer<'info>{
     pub system_program : Program<'info , System>
 }
 
+
+impl <'info> MakeOffer<'info>{
+    //save the escrow
+    pub fn save_escrow(&mut self, recieve:u64 , seed :u64, bump:&MakeOfferBumps  )-> Result<()>{
+        self.escrow.set_inner(Escrow{
+            token_a_add : self.token_a.key(),
+            token_b_add : self.token_b.key(),
+            maker_add : self.maker.key(),
+            receive,
+            seed,
+            bump: bump.escrow
+        });
+        Ok(())
+    }
+
+    //deposit to the vault
+    pub fn fund_vault(&mut self , deposit:u64)->Result<()>{
+        //create transaction accounts
+        let txn_accs = TransferChecked{
+            //makers account for that token
+            from:self.maker_ata_a.to_account_info(),
+            //to the vault address
+            to : self.vault.to_account_info(),
+            //authority of the deduction account
+            authority: self.maker.to_account_info(),
+            //mint address which is being deposited
+            mint :  self.token_a.to_account_info(),
+        };
+
+        //create context of cpi
+        let cpi_ctx = CpiContext::new(self.token_program.to_account_info(), txn_accs);
+
+        transfer_checked(cpi_ctx, deposit, self.token_a.decimals)
+    }
+}
 
 
