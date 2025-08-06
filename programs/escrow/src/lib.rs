@@ -1,10 +1,8 @@
-pub mod constants;
+
 pub mod instructions;
 pub mod state;
 
 use anchor_lang::prelude::*;
-
-pub use constants::*;
 pub use instructions::*;
 
 declare_id!("GuPikW5SnEVqmKxEkYcXyrFoGk6pP4nyYCE7ivZWW77j");
@@ -13,7 +11,8 @@ declare_id!("GuPikW5SnEVqmKxEkYcXyrFoGk6pP4nyYCE7ivZWW77j");
 pub mod escrow {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        initialize::handler(ctx)
-    }
+   pub fn make(ctx:Context<MakeOffer>, deposit:u64, receive:u64 , seed:u64)->Result<()>{
+        ctx.accounts.fund_vault(deposit)?;
+        ctx.accounts.save_escrow(receive, seed, &ctx.bumps)
+   }
 }

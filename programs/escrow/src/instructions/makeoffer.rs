@@ -7,6 +7,7 @@ use crate::state::Escrow;
 
 
 #[derive(Accounts)]
+#[instruction(seed:u64)]
 pub struct MakeOffer<'info>{
     //who is creating the offer
     //the one who signs this txn
@@ -74,7 +75,7 @@ pub struct MakeOffer<'info>{
 
 impl <'info> MakeOffer<'info>{
     //save the escrow
-    pub fn save_escrow(&mut self, recieve:u64 , seed :u64, bump:&MakeOfferBumps  )-> Result<()>{
+    pub fn save_escrow(&mut self, receive:u64 , seed :u64, bump:&MakeOfferBumps  )-> Result<()>{
         self.escrow.set_inner(Escrow{
             token_a_add : self.token_a.key(),
             token_b_add : self.token_b.key(),
