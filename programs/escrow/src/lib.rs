@@ -11,7 +11,7 @@ declare_id!("GuPikW5SnEVqmKxEkYcXyrFoGk6pP4nyYCE7ivZWW77j");
 pub mod escrow {
     use super::*;
 
-   pub fn make(ctx:Context<MakeOffer>, deposit:u64, receive:u64 , seed:u64)->Result<()>{
+   pub fn make(ctx:Context<MakeOffer>, seed:u64,deposit:u64, receive:u64)->Result<()>{
         ctx.accounts.fund_vault(deposit)?;
         ctx.accounts.save_escrow(receive, seed, &ctx.bumps)
    }
